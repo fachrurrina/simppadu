@@ -1,0 +1,13 @@
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Permohonan bermaterai 6.000,- ditujukan kepada Kepala Kantor KPPTSP Kabupaten Bireuen;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Foto copy Surat Kepemilikan Tanah (Sertifikat, Akta Jual Beli) / Keterangan Tanah / Sewa Menyewa;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Foto copy Kartu Tanda Penduduk (KTP);');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Foto copy Pendirian Usaha bagi yang berbadan hukum;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Foto copy Tanda Bukti Lunas PBB tahun berjalan;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Foto copy Tanda Bukti Lunas Persampahan tahun berjalan (bagi pemohon yang keberadaan usahanya di dalam wilayah kerja instansi melakukan pengambilan sampah);');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'NPWPD / NPWRD;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Sket lokasi yang disahkan oleh Geuchiek;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Surat pernyataan gudang yang disahkan  oleh geuchiek setempat (khusus untuk kilang padi);');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Surat pernyataan persetujuan tidak keberatan dari pemilik tanah/bangunan apabila tempat usaha tersebut bukan milik sendiri;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Surat keterangan domisili tempat usaha dari geuchiek setempat;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Pernyataan pemohon izin tentang kesanggupan memenuhi ketentuan peraturan perundang-undangan;');
+insert into t_syarat (id_modul, id_sub_modul, nama_syarat) values (2, 21, 'Pas foto warna 3x4 cm sebanyak 2 (dua) lembar;');

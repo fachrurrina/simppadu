@@ -1,0 +1,72 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 23 Mei 14, 15:35:01
+    Author     : Fachrul
+*/
+
+body {
+    
+} 
+
+.col-inner{
+    padding: 10px;
+    
+}
+
+
+.table-form {
+  border: none;
+}
+.table-form > thead > tr > th,
+.table-form > tbody > tr > th,
+.table-form > tfoot > tr > th,
+.table-form > thead > tr > td,
+.table-form > tbody > tr > td,
+.table-form > tfoot > tr > td {
+  border: none;
+}
+
+.table-form > thead > tr > th:first-child,
+.table-form > tbody > tr > td:first-child{
+    max-width: 100px;
+}
+
+
+
+
+/* make sidebar nav vertical */ 
+@media (min-width: 768px) {
+  .sidebar-nav .navbar .navbar-collapse {
+    padding: 0;
+    max-height: none;
+  }
+  .sidebar-nav .navbar ul {
+    float: none;
+  }
+  .sidebar-nav .navbar ul:not {
+    display: block;
+  }
+  .sidebar-nav .navbar li {
+    float: none;
+    display: block;
+  }
+  .sidebar-nav .navbar li a {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+
+.slide_menu{
+	color: white;
+	display: none;
+}
+
+
+table form{
+  margin-bottom: 0;
+}
