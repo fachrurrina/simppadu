@@ -5,7 +5,7 @@
     <section class="content-header">
         <h1>
             Laporan
-            <small>Rekap Bulanan SITU</small>
+            <small>Rekap Bulanan SIKP</small>
         </h1>
         
     </section>
