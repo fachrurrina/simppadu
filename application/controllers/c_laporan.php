@@ -755,6 +755,10 @@ class C_laporan extends CI_Controller{
 						t_tdi.alamat_pabrik, 
 						t_tdi.id_kel_pabrik,
 						t_tdi.id_kec_pabrik,
+
+						t_tdi.id_kbli,
+						t_tdi.komoditi_industri,
+						t_tdi.nilai_investasi,
 						
 						t_tdi.tanggal_terbit, 
 						
@@ -791,11 +795,12 @@ class C_laporan extends CI_Controller{
 				$objPHPExcel->getActiveSheet()->setCellValue('A5', $string_judul);
 
 
-				$objPHPExcel->getActiveSheet()->getStyle("A$h:I$h")->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-				$objPHPExcel->getActiveSheet()->getStyle("A$h:I$h")->getAlignment()->setWrapText(true);
+				$objPHPExcel->getActiveSheet()->getStyle("A$h:L$h")->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+				
+				$objPHPExcel->getActiveSheet()->getStyle("A$h:L$h")->getAlignment()->setWrapText(true);
 
 
-				$objPHPExcel->getActiveSheet()->getStyle("A$h:I$h")->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+				$objPHPExcel->getActiveSheet()->getStyle("A$h:L$h")->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 				// $objPHPExcel->getActiveSheet()->getStyle("A$h:J$h")->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 				// $objPHPExcel->getActiveSheet()->getStyle("A$h:J$h")->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
 
@@ -819,29 +824,40 @@ class C_laporan extends CI_Controller{
 				$alamat_perusahaan = ucwords(strtolower($r_data->alamat_perusahaan .' Gp. '. $this->m_kel->get_nm_kel($r_data->id_kel_perusahaan) .' Kec. '. $this->m_kec->get_nm_kec($r_data->id_kec_perusahaan)));
 				$objPHPExcel->getActiveSheet()->setCellValue('F'.$h, "$alamat_perusahaan");
 
-				
+				$array_id_kbli = explode('|', $r_data->id_kbli);
+				$nama_kbli = '';
+				foreach ($array_id_kbli as $id_kbli) {
+					$nama_kbli .= $this->m_kbli->get_judul_kbli($id_kbli). ' (' .$id_kbli. ') ';
+				}
+				$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "$nama_kbli");
+
+				$komoditi_industri = $r_data->komoditi_industri;
+				$objPHPExcel->getActiveSheet()->setCellValue('H'.$h, "$komoditi_industri");
+
+				$nilai_investasi = 'Rp. ' . number_format( $r_data->nilai_investasi, 0 , '' , '.' );
+				$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "$nilai_investasi");
 
 				$tanggal_terbit = convert_tanggal_jadi_string($r_data->tanggal_terbit);
-				$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "$tanggal_terbit");
+				$objPHPExcel->getActiveSheet()->setCellValue('J'.$h, "$tanggal_terbit");
 
 				$ket = $r_data->ket;
-				if($ket == 'B') $objPHPExcel->getActiveSheet()->setCellValue('H'.$h, "√");
-				if($ket == 'PR') $objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "√");	
+				if($ket == 'B') $objPHPExcel->getActiveSheet()->setCellValue('K'.$h, "√");
+				if($ket == 'PR') $objPHPExcel->getActiveSheet()->setCellValue('L'.$h, "√");	
 
 				$h++;
 				$no++;
 			}
 
 			$h = $h + 2;
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "Kepala Kantor Pelayanan Perizinan Terpadu Satu Pintu");
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "Kepala Kantor Pelayanan Perizinan Terpadu Satu Pintu");
 			$h = $h + 1;
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "Kabupaten Bireuen");
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "Kabupaten Bireuen");
 			$h = $h + 4;
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "MUHAMMAD NASIR, SP");
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "MUHAMMAD NASIR, SP");
 			$h = $h + 1;
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "PEMBINA");
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "PEMBINA");
 			$h = $h + 1;
-			$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "NIP. 19621231 198711 1 002");
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "NIP. 19621231 198711 1 002");
 		    
 		    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 	        $objWriter->save(APPPATH. '../saved/laporan_tdi.xlsx');
@@ -863,6 +879,162 @@ class C_laporan extends CI_Controller{
 
 		$this->load->view('templates/top');
         $this->load->view('laporan/tdi', $data);
+        $this->load->view('templates/bottom');
+	}
+
+
+
+	public function laporan_sikp(){
+
+		
+
+		if($this->input->post('cetak')){
+
+			$periode           = $this->input->post('periode');
+			$tahun             = explode('-', $periode)[0];
+			$bulan             = explode('-', $periode)[1];
+			$id_kec_perusahaan = $this->input->post('id_kec_perusahaan');
+			
+
+			$sql = "SELECT 
+						t_tdi.no_sk, 
+						t_tdi.nama_pemilik,  
+						t_tdi.nama_perusahaan, 
+						t_tdi.alamat_pemilik, 
+						t_tdi.id_kel_pemilik,
+						t_tdi.id_kec_pemilik,
+
+						t_tdi.alamat_perusahaan, 
+						t_tdi.id_kel_perusahaan,
+						t_tdi.id_kec_perusahaan,
+						
+						t_tdi.alamat_pabrik, 
+						t_tdi.id_kel_pabrik,
+						t_tdi.id_kec_pabrik,
+
+						t_tdi.id_kbli,
+						t_tdi.komoditi_industri,
+						t_tdi.nilai_investasi,
+						
+						t_tdi.tanggal_terbit, 
+						
+						t_tdi.ket
+					FROM 
+						t_tdi
+					WHERE 
+						MONTH(t_tdi.tanggal_terbit) = $bulan and YEAR(t_tdi.tanggal_terbit) = $tahun";
+
+			if(!empty($id_kec_perusahaan)){
+				$sql .= " and id_kec_perusahaan = $id_kec_perusahaan";
+			}
+
+			$data = $this->db->query($sql)->result();
+
+
+
+			
+			$this->load->library('excel_iofactory');
+			
+			$objReader    = $this->excel_iofactory;
+			$objReader    = $objReader::createReader('Excel2007');
+			$objPHPExcel  = $objReader->load(APPPATH. '../templates/laporan_tdi.xlsx');
+			
+			
+			$h = 9;
+			$no = 1;
+			foreach ($data as $r_data) {
+
+				$string_judul = "Laporan Tanda Daftar Industri (TDI) Bulan $bulan Tahun $tahun";
+				if(!empty($id_kec_perusahaan)){
+					$string_judul .= " Per Kecamatan ". ucwords(strtolower($this->m_kec->get_nm_kec($id_kec_perusahaan)));
+				}
+				$objPHPExcel->getActiveSheet()->setCellValue('A5', $string_judul);
+
+
+				$objPHPExcel->getActiveSheet()->getStyle("A$h:L$h")->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+				
+				$objPHPExcel->getActiveSheet()->getStyle("A$h:L$h")->getAlignment()->setWrapText(true);
+
+
+				$objPHPExcel->getActiveSheet()->getStyle("A$h:L$h")->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+				// $objPHPExcel->getActiveSheet()->getStyle("A$h:J$h")->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+				// $objPHPExcel->getActiveSheet()->getStyle("A$h:J$h")->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+
+				// $objPHPExcel->getActiveSheet()->getRowDimension($h)->setRowHeight(30);
+
+				$objPHPExcel->getActiveSheet()->setCellValue('A'.$h, "$no");
+
+				$no_sk = $r_data->no_sk;
+				$objPHPExcel->getActiveSheet()->setCellValue('B'.$h, "$no_sk");
+
+				$nama_pemilik = $r_data->nama_pemilik;
+				$objPHPExcel->getActiveSheet()->setCellValue('C'.$h, "$nama_pemilik");
+
+				$alamat_pemilik = ucwords(strtolower($r_data->alamat_pemilik .' Gp. '. $this->m_kel->get_nm_kel($r_data->id_kel_pemilik) .' Kec. '. $this->m_kec->get_nm_kec($r_data->id_kec_pemilik)));
+				$objPHPExcel->getActiveSheet()->setCellValue('D'.$h, "$alamat_pemilik");
+
+				$nama_perusahaan = $r_data->nama_perusahaan;
+				$objPHPExcel->getActiveSheet()->setCellValue('E'.$h, " \"$nama_perusahaan\"");
+
+
+				$alamat_perusahaan = ucwords(strtolower($r_data->alamat_perusahaan .' Gp. '. $this->m_kel->get_nm_kel($r_data->id_kel_perusahaan) .' Kec. '. $this->m_kec->get_nm_kec($r_data->id_kec_perusahaan)));
+				$objPHPExcel->getActiveSheet()->setCellValue('F'.$h, "$alamat_perusahaan");
+
+				$array_id_kbli = explode('|', $r_data->id_kbli);
+				$nama_kbli = '';
+				foreach ($array_id_kbli as $id_kbli) {
+					$nama_kbli .= $this->m_kbli->get_judul_kbli($id_kbli). ' (' .$id_kbli. ') ';
+				}
+				$objPHPExcel->getActiveSheet()->setCellValue('G'.$h, "$nama_kbli");
+
+				$komoditi_industri = $r_data->komoditi_industri;
+				$objPHPExcel->getActiveSheet()->setCellValue('H'.$h, "$komoditi_industri");
+
+				$nilai_investasi = 'Rp. ' . number_format( $r_data->nilai_investasi, 0 , '' , '.' );
+				$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "$nilai_investasi");
+
+				$tanggal_terbit = convert_tanggal_jadi_string($r_data->tanggal_terbit);
+				$objPHPExcel->getActiveSheet()->setCellValue('J'.$h, "$tanggal_terbit");
+
+				$ket = $r_data->ket;
+				if($ket == 'B') $objPHPExcel->getActiveSheet()->setCellValue('K'.$h, "√");
+				if($ket == 'PR') $objPHPExcel->getActiveSheet()->setCellValue('L'.$h, "√");	
+
+				$h++;
+				$no++;
+			}
+
+			$h = $h + 2;
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "Kepala Kantor Pelayanan Perizinan Terpadu Satu Pintu");
+			$h = $h + 1;
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "Kabupaten Bireuen");
+			$h = $h + 4;
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "MUHAMMAD NASIR, SP");
+			$h = $h + 1;
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "PEMBINA");
+			$h = $h + 1;
+			$objPHPExcel->getActiveSheet()->setCellValue('I'.$h, "NIP. 19621231 198711 1 002");
+		    
+		    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+	        $objWriter->save(APPPATH. '../saved/laporan_tdi.xlsx');
+
+	        ?>
+	        <script>
+	            window.location = 'http://<?php echo $_SERVER['SERVER_NAME'] ?>/simppadu/saved/laporan_tdi.xlsx';
+	            setTimeout(function(){
+	                window.location = '<?php echo site_url("c_laporan/laporan_tdi") ?>';
+	            }, 3000);
+	        </script>
+	        <?php 
+		}
+
+		/*$q = $this->db->query('select distinct nama_bidang_tdi from t_tdi');
+		$data['nama_bidang_tdi'] = $q->result();*/
+		$data['kec'] = $this->m_kec->get_all();
+		$data['modul'] = $this->m_modul->get_all();
+
+		$this->load->view('templates/top');
+        $this->load->view('laporan/sikp', $data);
         $this->load->view('templates/bottom');
 	}
 
