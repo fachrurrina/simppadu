@@ -49,8 +49,8 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = '';
+$db['default']['username'] = 'fachrul';
+$db['default']['password'] = 'cendol';
 $db['default']['database'] = 'new_kpptsp';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
