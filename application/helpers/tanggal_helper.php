@@ -1,7 +1,12 @@
 <?php
 
-function convert_tanggal_jadi_string($tanggal){
+function convert_tanggal_jadi_string($tanggal = null){
 	
+	if($tanggal == null){
+		
+		return;
+	}
+
 	$array_tanggal = explode('-', $tanggal);
 
 	switch ($array_tanggal[1]) {
